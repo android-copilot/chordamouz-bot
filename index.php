@@ -1,78 +1,56 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 
-
+// دریافت توکن از متغیر محیطی
 $token = getenv('BOT_TOKEN');
 
-
-$content = file_get_contents("php://input");
-file_put_contents("log.txt", "RAW INPUT:\n" . $content . "\n\n", FILE_APPEND);
-
-if (!$content) {
-    file_put_contents("log.txt", "No input received\n\n", FILE_APPEND);
-    exit("No input received");
+// بررسی اینکه توکن تعریف شده یا نه
+if (!$token) {
+    error_log("توکن یافت نشد. لطفاً BOT_TOKEN را در محیط تعریف کن.");
+    exit;
 }
 
-$update = json_decode($content, true);
+// دریافت داده‌های ارسالی از تلگرام
+$update = json_decode(file_get_contents('php://input'), true);
 
-if (!isset($update["message"])) {
-    file_put_contents("log.txt", "No message in input\n\n", FILE_APPEND);
-    exit("No message in input");
-}
+// بررسی اینکه پیام دریافتی معتبره
+if (isset($update['message'])) {
+    $chat_id = $update['message']['chat']['id'];
+    $text = $update['message']['text'];
 
-$chat_id = $update["message"]["chat"]["id"];
-$text = $update["message"]["text"] ?? "";
+    // اگر /start فرستاده شد، کیبورد سفارشی نشون بده
+    if ($text === "/start") {
+        $reply = "خوش اومدی به ChordAmouz! یکی از گزینه‌ها رو انتخاب کن:";
 
-file_put_contents("log.txt", "Chat ID: $chat_id\nText: $text\n", FILE_APPEND);
+        $keyboard = [
+            'keyboard' => [
+                [['text' => 'آکوردها']],
+                [['text' => 'آموزش'], ['text' => 'درباره ما']]
+            ],
+            'resize_keyboard' => true
+        ];
 
+        $data = [
+            'chat_id' => $chat_id,
+            'text' => $reply,
+            'reply_markup' => json_encode($keyboard)
+        ];
+    } else {
+        // پاسخ پیش‌فرض به پیام‌های دیگه
+        $reply = "پیامت رو دریافت کردم: $text";
+        $data = [
+            'chat_id' => $chat_id,
+            'text' => $reply
+        ];
+    }
 
-if ($text === "/start") {
-    $keyboard = [
-        'keyboard' => [
-            [['text' => 'آکوردها']],
-            [['text' => 'آموزش'], ['text' => 'درباره ما']]
-        ],
-        'resize_keyboard' => true
-    ];
-
-    $reply = "خوش اومدی به ChordAmouz! یکی از گزینه‌ها رو انتخاب کن:";
-
-    $dataStart = [
-        'chat_id' => $chat_id,
-        'text' => $reply,
-        'reply_markup' => json_encode($keyboard)
-    ];
-} else {
-    $reply = "Check menu: " . $text;
-}
-
-file_put_contents("log.txt", "Reply: $reply\n", FILE_APPEND);
-
-sendMessage($chat_id, $reply);
-
-function sendMessage($chat_id, $text) {
-    global $token;
+    // ارسال پاسخ به کاربر
     $url = "https://api.telegram.org/bot$token/sendMessage";
-
-    $data = [
-        'chat_id' => $chat_id,
-        'text' => $text
-    ];
-
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataStart));
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    $result = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlError = curl_error($ch);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_exec($ch);
     curl_close($ch);
-
-    file_put_contents("log.txt", "HTTP CODE: $httpCode\nResult: $result\nCURL ERROR: $curlError\n---\n", FILE_APPEND);
 }
+
 ?>
