@@ -1,7 +1,7 @@
 services:
 	- type: web
 	  name: chordamouz-bot
-	  env: php
+	  env: docker
 	  builtCommand: ""
 	  startCommand: ""
 	  plan: free
