@@ -28,7 +28,21 @@ file_put_contents("log.txt", "Chat ID: $chat_id\nText: $text\n", FILE_APPEND);
 
 
 if ($text === "/start") {
-    $reply = getenv('START');
+    $keyboard = [
+        'keyboard' => [
+            [['text' => 'آکوردها']],
+            [['text' => 'آموزش'], ['text' => 'درباره ما']]
+        ],
+        'resize_keyboard' => true
+    ];
+
+    $reply = "خوش اومدی به ChordAmouz! یکی از گزینه‌ها رو انتخاب کن:";
+
+    $data = [
+        'chat_id' => $chat_id,
+        'text' => $reply,
+        'reply_markup' => json_encode($keyboard)
+    ];
 } else {
     $reply = "Check menu: " . $text;
 }
