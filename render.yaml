@@ -1,0 +1,7 @@
+services:
+	- type: web
+	  name: chordamouz-bot
+	  env: php
+	  builtCommand: ""
+	  startCommand: ""
+	  plan: free
