@@ -38,7 +38,7 @@ if ($text === "/start") {
 
     $reply = "خوش اومدی به ChordAmouz! یکی از گزینه‌ها رو انتخاب کن:";
 
-    $data = [
+    $dataStart = [
         'chat_id' => $chat_id,
         'text' => $reply,
         'reply_markup' => json_encode($keyboard)
@@ -63,7 +63,8 @@ function sendMessage($chat_id, $text) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dataStart));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
