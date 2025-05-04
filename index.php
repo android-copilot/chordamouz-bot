@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 
-$token = "8128533812:AAFqy5nfbeAOAI5zDrHKVzH4xbDpKqrFIcg";
+$token = getenv('BOT_TOKEN');
 
 
 $content = file_get_contents("php://input");
@@ -28,9 +28,9 @@ file_put_contents("log.txt", "Chat ID: $chat_id\nText: $text\n", FILE_APPEND);
 
 
 if ($text === "/start") {
-    $reply = "????! ??? ????? ?? ???? ChordAmouz.";
+    $reply = "Welcome to ChordAmouz.";
 } else {
-    $reply = "?????: " . $text;
+    $reply = "Check menu: " . $text;
 }
 
 file_put_contents("log.txt", "Reply: $reply\n", FILE_APPEND);
