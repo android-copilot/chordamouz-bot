@@ -28,7 +28,7 @@ file_put_contents("log.txt", "Chat ID: $chat_id\nText: $text\n", FILE_APPEND);
 
 
 if ($text === "/start") {
-    $reply = "Welcome to ChordAmouz.";
+    $reply = getenv('START');
 } else {
     $reply = "Check menu: " . $text;
 }
